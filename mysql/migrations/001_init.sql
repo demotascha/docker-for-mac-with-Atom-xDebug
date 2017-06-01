@@ -1,4 +1,4 @@
-CREATE DATABASE bloomon_db_testing;
-CREATE USER 'bloomon_db_testing'@'%' IDENTIFIED BY 'bloomon_testing';
-GRANT ALL PRIVILEGES ON *.* TO 'bloomon_testing'@'%';
+CREATE DATABASE demo_db_testing;
+CREATE USER 'demo_db_testing'@'%' IDENTIFIED BY 'demo_testing';
+GRANT ALL PRIVILEGES ON *.* TO 'demo_testing'@'%';
 FLUSH PRIVILEGES;
