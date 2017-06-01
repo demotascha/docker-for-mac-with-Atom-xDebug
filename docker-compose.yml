@@ -1,0 +1,66 @@
+version: "2"
+services:
+  phpfpm:
+    container_name: demo-php7fpm-dev
+    restart: always
+    image: demo-php7fpm:dev
+    build: .
+    links:
+      - mysql
+      - redis
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./logs/php-fpm:/var/log/php-fpm
+      - ./index.php:/var/www/html/index.php
+    # env_file:
+  mysql:
+    container_name: demo-dev-mysql
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=demo_db_local
+      - MYSQL_ALLOW_EMPTY_PASSWORD=no
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/migrations:/docker-entrypoint-initdb.d
+  redis:
+    container_name: demo-dev-redis
+    image: redis:3.2-alpine
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+  # NGINX
+  nginx:
+    restart: always
+    container_name: demo-dev-nginx
+    image: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    expose:
+      - "80"
+      - "443"
+      - "9000"
+    links:
+      - phpfpm
+      - mysql
+      - redis
+    depends_on:
+      - phpfpm
+      - mysql
+      - redis
+    # env_file:
+    volumes:
+      - ./index.php:/var/www/html/index.php
+      - ./nginx:/etc/nginx
+      #- ./nginx/sites-enabled/site.conf:/etc/nginx/nginx.conf
+      - ./logs/nginx:/var/log/nginx
+    extra_hosts:
+      - "www.demo.local.tw:127.0.0.1"
